@@ -20,18 +20,19 @@ html,body{width:100%;height:100%;font-family:var(--sans);background:var(--ink);o
 .slide{
   position:absolute;inset:0;display:flex;flex-direction:column;
   justify-content:flex-start;align-items:center;
-  padding:52px 24px 80px;
+  padding:64px 24px 88px;
   opacity:0;pointer-events:none;
   transition:opacity .38s ease,transform .38s ease;
   transform:translateX(40px);
   overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
+  scroll-padding-top:64px;
 }
 .slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
 .slide.exit-left{opacity:0;transform:translateX(-40px)}
 .slide.exit-right{opacity:0;transform:translateX(40px)}
-/* center content vertically on desktop when content fits */
-@media(min-height:600px){
+/* center content vertically only on tall desktop screens */
+@media(min-height:700px) and (min-width:600px){
   .slide{justify-content:center}
 }
 
@@ -55,7 +56,7 @@ html,body{width:100%;height:100%;font-family:var(--sans);background:var(--ink);o
 
 /* ── COMMON ─────────────────────────────────────── */
 .inner{width:100%;max-width:860px}
-.eye{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--saf);margin-bottom:8px}
+.eye{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--saf);margin-bottom:5px}
 h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 .accent{color:var(--saf)}.jade{color:var(--jade2)}
 .muted{color:var(--muted)}
@@ -87,7 +88,7 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* ── S2 HOW IT WORKS ────────────────────────────── */
-.steps-col{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.steps-col{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .step-item{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;transition:border-color .25s}
 .step-item:hover{border-color:rgba(255,153,51,.3)}
 .step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;border:2px solid}
@@ -109,7 +110,7 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
   .step-body{width:100%}
   .step-tag{margin-top:4px}
 }
-.detail-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+.detail-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
 @media(min-width:600px){.detail-row{grid-template-columns:1fr 1fr 1fr}}
 .dc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px 14px}
 .dc-lbl{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--saf);margin-bottom:5px}
@@ -150,7 +151,7 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 .pb-fill{height:3px;background:linear-gradient(90deg,var(--jade),var(--jade2));border-radius:2px;width:0%;transition:width .4s ease}
 
 /* ── S4 BOARD COVERAGE ──────────────────────────── */
-.boards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+.boards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
 @media(min-width:500px){.boards-grid{grid-template-columns:repeat(4,1fr)}}
 .bc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 10px;text-align:center;transition:all .25s;cursor:pointer}
 .bc:active,.bc.hl{background:rgba(255,153,51,.08);border-color:rgba(255,153,51,.4)}
@@ -162,7 +163,7 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 .board-note{margin-top:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--muted);line-height:1.55;text-align:center}
 
 /* ── S5 ADVANTAGES ──────────────────────────────── */
-.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 @media(min-width:640px){.adv-grid{grid-template-columns:repeat(3,1fr)}}
 .adv-card{border-radius:14px;padding:16px 14px;border:1px solid;transition:transform .25s}
 @media(hover:hover){.adv-card:hover{transform:translateY(-3px)}}
@@ -177,7 +178,7 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 .adv-stat.s{color:var(--saf)}.adv-stat.j{color:var(--jade2)}.adv-stat.w{color:rgba(255,255,255,.8)}
 
 /* ── S6 COMPARISON ──────────────────────────────── */
-.cmp-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:16px;border-radius:10px}
+.cmp-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:12px;border-radius:10px}
 .cmp-table{width:100%;border-collapse:collapse;min-width:480px}
 .cmp-table th{padding:9px 12px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.1)}
 .cmp-table th:first-child{text-align:left;color:var(--muted)}
@@ -204,6 +205,20 @@ h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
 .cta-btn:active{transform:scale(.97)}
 @media(hover:hover){.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,153,51,.5)}}
 .cta-note{font-size:10.5px;color:rgba(255,255,255,.28);margin-top:10px;line-height:1.5}
+
+/* ── MOBILE HEADER VISIBILITY FIX ────────────────
+   Ensures eye + h2 always visible at top on small screens.
+   Overrides any justify-center that clips headers. */
+@media(max-width:599px){
+  .slide{justify-content:flex-start !important}
+  .inner{padding-top:0}
+  .eye{margin-bottom:4px}
+  h2{font-size:clamp(17px,5.5vw,26px) !important;margin-bottom:2px}
+  .sub{font-size:12px;margin-top:8px}
+}
+@media(max-height:699px){
+  .slide{justify-content:flex-start !important}
+}
 </style>
 </head>
 <body>
