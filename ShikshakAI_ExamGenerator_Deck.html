@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ShikshakAI — Exam Paper Generator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1B1464;--saf:#FF9933;--saf2:#FFB347;
+  --jade:#2E7D6B;--jade2:#3DA88F;--red:#D93025;
+  --muted:rgba(255,255,255,.52);
+  --sans:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{width:100%;height:100%;font-family:var(--sans);background:var(--ink);overflow:hidden;touch-action:pan-y}
+
+/* ── DECK & SLIDES ──────────────────────────────── */
+.deck{width:100%;height:100%;position:relative;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-start;align-items:center;
+  padding:52px 24px 80px;
+  opacity:0;pointer-events:none;
+  transition:opacity .38s ease,transform .38s ease;
+  transform:translateX(40px);
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit-left{opacity:0;transform:translateX(-40px)}
+.slide.exit-right{opacity:0;transform:translateX(40px)}
+/* center content vertically on desktop when content fits */
+@media(min-height:600px){
+  .slide{justify-content:center}
+}
+
+/* ── NAV ────────────────────────────────────────── */
+.nav{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;z-index:300;
+  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.15);
+  border-radius:40px;padding:8px 14px;backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;flex-shrink:0}
+.dot.on{background:var(--saf);width:18px;border-radius:3px}
+.nbtn{background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:20px;padding:2px 6px;line-height:1;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center}
+.nbtn:active{color:#fff}
+.ctr{font-size:10px;color:rgba(255,255,255,.35);font-family:var(--mono);min-width:28px;text-align:center}
+
+/* ── SWIPE HINT ─────────────────────────────────── */
+.swipe-hint{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.06em;pointer-events:none;display:none}
+@media(max-width:600px){.swipe-hint{display:block}}
+
+/* ── COMMON ─────────────────────────────────────── */
+.inner{width:100%;max-width:860px}
+.eye{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--saf);margin-bottom:8px}
+h2{font-size:clamp(20px,4.5vw,40px);font-weight:800;line-height:1.1;color:#fff}
+.accent{color:var(--saf)}.jade{color:var(--jade2)}
+.muted{color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+.bs{background:rgba(255,153,51,.12);border-color:rgba(255,153,51,.35);color:var(--saf2)}
+.bj{background:rgba(46,125,107,.12);border-color:rgba(46,125,107,.4);color:var(--jade2)}
+.bw{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)}
+
+/* slide backgrounds */
+.bg1{background:var(--ink)}
+.bg1::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 45%,rgba(255,153,51,.11) 0%,transparent 70%);pointer-events:none}
+.bg2{background:linear-gradient(145deg,#0D0B38,var(--ink))}
+.bg3{background:linear-gradient(160deg,#0F0D38,#1a1060 50%,#0D1F1A)}
+.bg4{background:var(--ink)}
+.bg5{background:linear-gradient(135deg,#0A0830,var(--ink) 55%,#0D221A)}
+.bg6{background:var(--ink)}
+.bg7{background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(255,153,51,.14) 0%,transparent 65%),var(--ink)}
+
+/* ── S1 HERO ────────────────────────────────────── */
+#s1{text-align:center}
+.s1-logo{font-size:clamp(32px,7vw,68px);font-weight:900;letter-spacing:-1px;background:linear-gradient(130deg,#fff 0%,var(--saf) 55%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.s1-sub{font-size:clamp(12px,2.5vw,16px);color:var(--muted);margin-bottom:20px}
+.s1-badges{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.pp-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 18px;width:100%;max-width:460px;text-align:left;font-family:var(--mono);font-size:10.5px;line-height:1.8;color:rgba(255,255,255,.6);position:relative;overflow:hidden}
+.pp-box::before{content:'LIVE PREVIEW';position:absolute;top:8px;right:12px;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em}
+.pp-title{color:var(--saf);font-weight:600;font-size:11px;margin-bottom:6px}
+.pp-q{color:#fff;font-weight:500}.pp-a{color:var(--jade2)}
+.blink-cur{display:inline-block;width:2px;height:11px;background:var(--saf);vertical-align:middle;animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── S2 HOW IT WORKS ────────────────────────────── */
+.steps-col{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.step-item{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;transition:border-color .25s}
+.step-item:hover{border-color:rgba(255,153,51,.3)}
+.step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;border:2px solid}
+.sn-saf{background:rgba(255,153,51,.15);border-color:var(--saf);color:var(--saf)}
+.sn-jade{background:rgba(46,125,107,.15);border-color:var(--jade2);color:var(--jade2)}
+.step-body{}
+.step-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.step-desc{font-size:11.5px;color:var(--muted);line-height:1.5}
+.step-tag{display:inline-block;margin-top:5px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.tag-s{background:rgba(255,153,51,.15);color:var(--saf2);border:1px solid rgba(255,153,51,.3)}
+.tag-j{background:rgba(46,125,107,.15);color:var(--jade2);border:1px solid rgba(46,125,107,.35)}
+/* desktop: horizontal steps */
+@media(min-width:700px){
+  .steps-col{flex-direction:row;gap:0;position:relative;align-items:flex-start}
+  .steps-col::before{content:'';position:absolute;top:20px;left:20px;right:20px;height:1px;background:linear-gradient(90deg,var(--saf),var(--jade),var(--saf2));opacity:.25;z-index:0}
+  .step-item{flex-direction:column;align-items:center;text-align:center;background:none;border:none;padding:0 6px;flex:1;position:relative;z-index:1;gap:8px}
+  .step-item:hover{border:none}
+  .step-num{width:40px;height:40px;background:var(--ink)}
+  .step-body{width:100%}
+  .step-tag{margin-top:4px}
+}
+.detail-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+@media(min-width:600px){.detail-row{grid-template-columns:1fr 1fr 1fr}}
+.dc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px 14px}
+.dc-lbl{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--saf);margin-bottom:5px}
+.dc-txt{font-size:11.5px;color:var(--muted);line-height:1.5}
+
+/* ── S3 LIVE DEMO ───────────────────────────────── */
+.demo-top{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+@media(min-width:640px){.demo-top{flex-direction:row;align-items:center;justify-content:space-between}}
+.board-pills{display:flex;gap:6px;flex-wrap:wrap}
+.bpill{padding:6px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .2s;min-height:34px}
+.bpill.active{background:var(--saf);color:var(--ink);border-color:var(--saf);font-weight:700}
+.bpill:active{opacity:.8}
+.gen-btn{background:var(--saf);color:var(--ink);border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .2s;white-space:nowrap;min-height:40px;width:100%}
+@media(min-width:640px){.gen-btn{width:auto}}
+.gen-btn:active:not(:disabled){opacity:.85}
+.gen-btn:disabled{background:rgba(255,255,255,.1);color:rgba(255,255,255,.35);cursor:not-allowed}
+.gen-btn.done{background:rgba(46,125,107,.25)!important;color:#7EDECE!important;border:1px solid rgba(61,168,143,.4)}
+/* paper shell */
+.paper-shell{background:#fff;border-radius:10px;padding:14px 16px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden}
+.paper-shell{height:280px}
+@media(min-width:480px){.paper-shell{height:320px}}
+@media(min-width:700px){.paper-shell{height:360px}}
+.ps-hd{text-align:center;border-bottom:2px solid #1B1464;padding-bottom:10px;margin-bottom:10px;flex-shrink:0}
+.ps-school{font-size:11px;font-weight:800;color:#1B1464;letter-spacing:.03em}
+.ps-meta{font-size:9.5px;color:#444;margin-top:2px}
+.ps-row{display:flex;justify-content:space-between;font-size:9px;color:#666;margin-top:4px;flex-wrap:wrap;gap:3px}
+.ps-body{font-size:10.5px;color:#1a1a1a;font-family:'Times New Roman',serif;line-height:1.6;flex:1;overflow-y:auto;padding-right:2px}
+.ps-body::-webkit-scrollbar{width:2px}.ps-body::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+.ps-sec{font-weight:700;font-size:11px;color:#1B1464;margin:8px 0 4px;border-bottom:1px solid #ccc;padding-bottom:2px;font-family:'Inter',sans-serif}
+.ps-q{margin-bottom:6px}.ps-qn{font-weight:700;color:#1B1464}
+.ps-opt{padding-left:14px;font-size:10px;color:#333;margin-top:1px}
+.ps-ans{font-size:10px;color:#2E7D6B;font-weight:600;padding:2px 8px 2px 14px;background:#f0faf7;border-left:2px solid #2E7D6B;margin-top:2px}
+.ps-ph{color:#aaa;font-size:11px;font-style:italic;text-align:center;padding:40px 10px;font-family:'Inter',sans-serif;line-height:1.5}
+.gen-status{position:absolute;bottom:0;left:0;right:0;padding:6px 12px;background:rgba(27,20,100,.05);font-size:9.5px;font-family:var(--mono);color:#666;border-top:1px solid #eee;display:none;align-items:center;gap:6px}
+.s-dot{width:6px;height:6px;border-radius:50%;background:var(--jade);flex-shrink:0;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+.pb-wrap{flex:1;background:#eee;border-radius:2px;height:3px;overflow:hidden}
+.pb-fill{height:3px;background:linear-gradient(90deg,var(--jade),var(--jade2));border-radius:2px;width:0%;transition:width .4s ease}
+
+/* ── S4 BOARD COVERAGE ──────────────────────────── */
+.boards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+@media(min-width:500px){.boards-grid{grid-template-columns:repeat(4,1fr)}}
+.bc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 10px;text-align:center;transition:all .25s;cursor:pointer}
+.bc:active,.bc.hl{background:rgba(255,153,51,.08);border-color:rgba(255,153,51,.4)}
+@media(hover:hover){.bc:hover{background:rgba(255,153,51,.08);border-color:rgba(255,153,51,.4);transform:translateY(-2px)}}
+.bc-flag{font-size:22px;margin-bottom:6px}
+.bc-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:2px}
+.bc-st{font-size:9.5px;color:var(--muted);line-height:1.35}
+.bc-tag{display:inline-block;margin-top:6px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:600;background:rgba(46,125,107,.15);color:var(--jade2);border:1px solid rgba(46,125,107,.3)}
+.board-note{margin-top:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--muted);line-height:1.55;text-align:center}
+
+/* ── S5 ADVANTAGES ──────────────────────────────── */
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+@media(min-width:640px){.adv-grid{grid-template-columns:repeat(3,1fr)}}
+.adv-card{border-radius:14px;padding:16px 14px;border:1px solid;transition:transform .25s}
+@media(hover:hover){.adv-card:hover{transform:translateY(-3px)}}
+.adv-card:active{opacity:.9}
+.ac1{background:rgba(255,153,51,.07);border-color:rgba(255,153,51,.22)}
+.ac2{background:rgba(46,125,107,.07);border-color:rgba(46,125,107,.25)}
+.ac3{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1)}
+.adv-ico{font-size:22px;margin-bottom:7px}
+.adv-title{font-size:12.5px;font-weight:700;color:#fff;margin-bottom:4px}
+.adv-body{font-size:11px;color:var(--muted);line-height:1.5}
+.adv-stat{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:8px}
+.adv-stat.s{color:var(--saf)}.adv-stat.j{color:var(--jade2)}.adv-stat.w{color:rgba(255,255,255,.8)}
+
+/* ── S6 COMPARISON ──────────────────────────────── */
+.cmp-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:16px;border-radius:10px}
+.cmp-table{width:100%;border-collapse:collapse;min-width:480px}
+.cmp-table th{padding:9px 12px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.1)}
+.cmp-table th:first-child{text-align:left;color:var(--muted)}
+.th-b{color:var(--red);text-align:center}.th-a{color:var(--jade2);text-align:center}
+.cmp-table td{padding:9px 12px;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cmp-table td:first-child{color:rgba(255,255,255,.75);font-weight:500;font-size:11px}
+.td-b{text-align:center;color:rgba(217,48,37,.9);font-family:var(--mono);font-weight:600;font-size:11.5px}
+.td-a{text-align:center;color:var(--jade2);font-family:var(--mono);font-weight:600;font-size:11.5px}
+.cmp-footer{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.cf{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center}
+.cf-v{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--saf)}
+.cf-l{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* ── S7 CTA ─────────────────────────────────────── */
+#s7{text-align:center}
+.cta-big{font-size:clamp(44px,10vw,80px);font-weight:900;line-height:1;background:linear-gradient(130deg,var(--saf),#fff 70%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:14px 0 6px}
+.cta-sub{font-size:clamp(12px,2.5vw,15px);color:var(--muted);margin-bottom:20px;line-height:1.5;max-width:400px}
+.cta-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:360px;margin:0 auto 20px}
+@media(min-width:500px){.cta-stats{grid-template-columns:repeat(4,1fr);max-width:520px}}
+.cs{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 8px;text-align:center}
+.cs-v{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--saf)}
+.cs-l{font-size:9.5px;color:var(--muted);margin-top:2px}
+.cta-btn{background:linear-gradient(130deg,var(--saf),#FF7700);color:var(--ink);border:none;padding:14px 36px;border-radius:40px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--sans);transition:all .25s;box-shadow:0 4px 28px rgba(255,153,51,.35);width:100%;max-width:320px}
+.cta-btn:active{transform:scale(.97)}
+@media(hover:hover){.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,153,51,.5)}}
+.cta-note{font-size:10.5px;color:rgba(255,255,255,.28);margin-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S1: HERO -->
+<div class="slide active bg1" id="s1">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;text-align:center">
+    <div class="eye">ShikshakAI · Feature Showcase</div>
+    <div class="s1-logo">Exam Paper Generator</div>
+    <div class="s1-sub">Board-compliant, answer-ready question papers in 30 seconds</div>
+    <div class="s1-badges">
+      <div class="badge bs">⚡ 30-second generation</div>
+      <div class="badge bj">✓ All Indian boards</div>
+      <div class="badge bw">📋 Full answer key</div>
+      <div class="badge bj">🎯 JEE / NEET ready</div>
+    </div>
+    <div class="pp-box" style="max-width:100%">
+      <div class="pp-title">CBSE Class X — Science · Light</div>
+      <div id="ppBody" style="margin-top:6px"></div>
+      <span class="blink-cur"></span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: HOW IT WORKS -->
+<div class="slide bg2" id="s2">
+  <div class="inner">
+    <div class="eye">How it works</div>
+    <h2>Topic to <span class="accent">print-ready paper</span> in 5 steps</h2>
+    <div class="steps-col">
+      <div class="step-item"><div class="step-num sn-saf">1</div><div class="step-body"><div class="step-title">Select board &amp; class</div><div class="step-desc">Choose board (CBSE, MP, UP…), class, and subject from a dropdown.</div><span class="step-tag tag-s">10 sec</span></div></div>
+      <div class="step-item"><div class="step-num sn-saf">2</div><div class="step-body"><div class="step-title">Enter topic &amp; sections</div><div class="step-desc">Type chapter name, pick sections (A, B, C…), question types and marks.</div><span class="step-tag tag-s">10 sec</span></div></div>
+      <div class="step-item"><div class="step-num sn-saf">3</div><div class="step-body"><div class="step-title">AI generates paper</div><div class="step-desc">Board-compliant MCQs, short answers, case studies generated instantly.</div><span class="step-tag tag-s">30 sec</span></div></div>
+      <div class="step-item"><div class="step-num sn-jade">4</div><div class="step-body"><div class="step-title">Review &amp; answer key</div><div class="step-desc">Every question ships with detailed answer, explanation &amp; JEE/NEET link.</div><span class="step-tag tag-j">Instant</span></div></div>
+      <div class="step-item"><div class="step-num sn-jade">5</div><div class="step-body"><div class="step-title">Export PDF</div><div class="step-desc">Print-ready student copy + teacher answer key. One click, zero formatting.</div><span class="step-tag tag-j">Instant</span></div></div>
+    </div>
+    <div class="detail-row">
+      <div class="dc"><div class="dc-lbl">Prep target</div><div class="dc-txt">Set JEE/NEET/CUET mode to include competitive-level questions alongside board questions.</div></div>
+      <div class="dc"><div class="dc-lbl">Past paper AI</div><div class="dc-txt">Toggle to pull real 2020–2025 board questions — adapted, never copied verbatim.</div></div>
+      <div class="dc"><div class="dc-lbl">Sub-topic spread</div><div class="dc-txt">AI distributes questions evenly — no sub-topic exceeds 40% of the paper.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: LIVE DEMO -->
+<div class="slide bg3" id="s3">
+  <div class="inner">
+    <div class="eye">Live demo</div>
+    <div class="demo-top">
+      <h2 style="font-size:clamp(18px,4vw,30px)">Watch it <span class="accent">generate</span> a real paper</h2>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="board-pills">
+          <button class="bpill active" onclick="setBoard('CBSE')">CBSE</button>
+          <button class="bpill" onclick="setBoard('MP Board')">MP Board</button>
+          <button class="bpill" onclick="setBoard('UP Board')">UP Board</button>
+          <button class="bpill" onclick="setBoard('Maharashtra')">Maharashtra</button>
+        </div>
+        <button class="gen-btn" id="genBtn" onclick="generatePaper()">⚡ Generate Paper</button>
+      </div>
+    </div>
+    <div class="paper-shell">
+      <div class="ps-hd">
+        <div class="ps-school" id="psSchool">GREENWOOD INTERNATIONAL SCHOOL</div>
+        <div class="ps-meta" id="psBoardLine">Board: CBSE &nbsp;|&nbsp; Class: X &nbsp;|&nbsp; Subject: Science</div>
+        <div class="ps-row">
+          <span>Chapter: Light — Reflection &amp; Refraction</span>
+          <span id="psDuration">Time: 2 hrs 30 min</span>
+          <span id="psMarks">Max Marks: 30</span>
+        </div>
+      </div>
+      <div class="ps-body" id="psBody">
+        <div class="ps-ph">Tap "⚡ Generate Paper" to see AI build a real exam paper</div>
+      </div>
+      <div class="gen-status" id="genStatus">
+        <div class="s-dot"></div>
+        <span id="statusText" style="min-width:0;flex:1;font-size:9px">Applying blueprint…</span>
+        <div class="pb-wrap"><div class="pb-fill" id="progressFill"></div></div>
+        <span id="progressPct" style="font-size:9px;color:#888;min-width:24px;text-align:right">0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: BOARD COVERAGE -->
+<div class="slide bg4" id="s4">
+  <div class="inner">
+    <div class="eye">Board coverage</div>
+    <h2>Every board. Every state. <span class="accent">One platform.</span></h2>
+    <div class="boards-grid">
+      <div class="bc"><div class="bc-flag">🏫</div><div class="bc-name">CBSE</div><div class="bc-st">Central · All India · 25,000+ schools</div><div class="bc-tag">Competency-based</div></div>
+      <div class="bc"><div class="bc-flag">🎓</div><div class="bc-name">ICSE / ISC</div><div class="bc-st">CISCE · Analytical depth</div><div class="bc-tag">Higher order</div></div>
+      <div class="bc"><div class="bc-flag">🌾</div><div class="bc-name">MP Board</div><div class="bc-st">MPBSE · Hindi &amp; English medium</div><div class="bc-tag">Hindi norms</div></div>
+      <div class="bc"><div class="bc-flag">🏔️</div><div class="bc-name">UP Board</div><div class="bc-st">UPMSP · Objective section mandatory</div><div class="bc-tag">20-mark objective</div></div>
+      <div class="bc"><div class="bc-flag">🌊</div><div class="bc-name">Maharashtra</div><div class="bc-st">State Board · Diagram-based</div><div class="bc-tag">Activity-based</div></div>
+      <div class="bc"><div class="bc-flag">🏜️</div><div class="bc-name">Rajasthan</div><div class="bc-st">RBSE · 4-tier structure</div><div class="bc-tag">4-tier format</div></div>
+      <div class="bc"><div class="bc-flag">🌴</div><div class="bc-name">Karnataka</div><div class="bc-st">KSEEB · Map + Source questions</div><div class="bc-tag">Map + Source</div></div>
+      <div class="bc"><div class="bc-flag">🌺</div><div class="bc-name">Tamil Nadu</div><div class="bc-st">TN Samacheer · Creative questions</div><div class="bc-tag">Creative section</div></div>
+    </div>
+    <div class="board-note">+ Gujarat, Bihar, Jharkhand, Kerala, Punjab, Haryana &amp; all other state boards.<br><span style="color:var(--jade2);font-weight:600">Unrecognised board auto-defaults to CBSE format.</span></div>
+  </div>
+</div>
+
+<!-- S5: ADVANTAGES -->
+<div class="slide bg5" id="s5">
+  <div class="inner">
+    <div class="eye">Why teachers love it</div>
+    <h2>6 advantages over <span class="accent">manual paper setting</span></h2>
+    <div class="adv-grid">
+      <div class="adv-card ac1"><div class="adv-ico">⚡</div><div class="adv-title">30 sec vs 6 hours</div><div class="adv-body">Complete board-compliant paper with answer key in the time it takes to pour chai.</div><div class="adv-stat s">480×</div><div style="font-size:9.5px;color:var(--muted)">faster than manual</div></div>
+      <div class="adv-card ac1"><div class="adv-ico">📋</div><div class="adv-title">Answer key included</div><div class="adv-body">Every question ships with answer, step-by-step explanation, and teacher copy.</div><div class="adv-stat s">100%</div><div style="font-size:9.5px;color:var(--muted)">auto marking scheme</div></div>
+      <div class="adv-card ac2"><div class="adv-ico">🎯</div><div class="adv-title">Blueprint exact</div><div class="adv-body">Correct section structure, question types, marks for the specific board and class.</div><div class="adv-stat j">Zero</div><div style="font-size:9.5px;color:var(--muted)">blueprint violations</div></div>
+      <div class="adv-card ac2"><div class="adv-ico">🚀</div><div class="adv-title">JEE/NEET ready</div><div class="adv-body">Each question tagged with its competitive exam connection — JEE, NEET, or CUET.</div><div class="adv-stat j">+1 level</div><div style="font-size:9.5px;color:var(--muted)">above board standard</div></div>
+      <div class="adv-card ac3"><div class="adv-ico">🔄</div><div class="adv-title">Infinite variants</div><div class="adv-body">Set A, B, C for the same chapter — different questions, same difficulty. No copying.</div><div class="adv-stat w">∞</div><div style="font-size:9.5px;color:var(--muted)">unique paper variants</div></div>
+      <div class="adv-card ac3"><div class="adv-ico">📅</div><div class="adv-title">Past paper AI</div><div class="adv-body">Adapts real 2020–2025 board questions. Students practise real patterns.</div><div class="adv-stat w">2020–25</div><div style="font-size:9.5px;color:var(--muted)">past paper database</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: COMPARISON -->
+<div class="slide bg6" id="s6">
+  <div class="inner">
+    <div class="eye">Before vs after</div>
+    <h2>Manual setting vs <span class="jade">ShikshakAI</span></h2>
+    <div class="cmp-scroll">
+      <table class="cmp-table">
+        <thead><tr><th>Task</th><th class="th-b">🔴 Manual</th><th class="th-a">🟢 ShikshakAI</th></tr></thead>
+        <tbody>
+          <tr><td>Write a 30-mark paper</td><td class="td-b">4–6 hours</td><td class="td-a">30 seconds</td></tr>
+          <tr><td>Create answer key</td><td class="td-b">2 hrs extra</td><td class="td-a">Auto-included</td></tr>
+          <tr><td>Check board blueprint</td><td class="td-b">Manual verify</td><td class="td-a">Guaranteed</td></tr>
+          <tr><td>Make Set B / Set C</td><td class="td-b">Repeat effort</td><td class="td-a">One more click</td></tr>
+          <tr><td>Add JEE/NEET questions</td><td class="td-b">Separate research</td><td class="td-a">Auto-tagged</td></tr>
+          <tr><td>Format &amp; print-ready</td><td class="td-b">Hours in Word</td><td class="td-a">PDF in 1 click</td></tr>
+          <tr><td>Cost per exam paper</td><td class="td-b">₹400–800</td><td class="td-a">In license</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cmp-footer">
+      <div class="cf"><div class="cf-v">₹2L+</div><div class="cf-l">Saved per year</div></div>
+      <div class="cf"><div class="cf-v">480×</div><div class="cf-l">Faster creation</div></div>
+      <div class="cf"><div class="cf-v">100%</div><div class="cf-l">Board compliance</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: CTA -->
+<div class="slide bg7" id="s7">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;text-align:center">
+    <div class="eye">Ready to transform your school?</div>
+    <h2>Your teachers deserve <span class="accent">better</span> than<br>6 hours on one exam paper</h2>
+    <div class="cta-big">30 sec</div>
+    <div class="cta-sub">That's all it takes to generate a complete, board-compliant, answer-ready exam paper for any Indian board.</div>
+    <div class="cta-stats">
+      <div class="cs"><div class="cs-v">480×</div><div class="cs-l">Faster</div></div>
+      <div class="cs"><div class="cs-v">8+</div><div class="cs-l">Boards covered</div></div>
+      <div class="cs"><div class="cs-v">∞</div><div class="cs-l">Variants</div></div>
+      <div class="cs"><div class="cs-v">₹2L+</div><div class="cs-l">Saved/year</div></div>
+    </div>
+    <button class="cta-btn" onclick="alert('Demo requested! Our team will reach out within 24 hours.')">Try Exam Generator Free</button>
+    <div class="cta-note">No setup cost · CBSE, ICSE, MP Board, UP Board + all state boards<br>Generate your first paper in 2 minutes</div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<div class="nav">
+  <button class="nbtn" id="prevBtn" onclick="prev()">‹</button>
+  <div id="dots" style="display:flex;gap:5px"></div>
+  <span class="ctr" id="ctr">1/7</span>
+  <button class="nbtn" id="nextBtn" onclick="next()">›</button>
+</div>
+<div class="swipe-hint">← swipe to navigate →</div>
+
+<script>
+/* ── NAVIGATION ─────────────────────────────────── */
+const SLIDES = document.querySelectorAll('.slide');
+const N = SLIDES.length;
+let cur = 0;
+
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < N; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  document.getElementById('ctr').textContent = (cur + 1) + '/' + N;
+}
+
+function goTo(idx, dir) {
+  if (idx === cur || idx < 0 || idx >= N) return;
+  const exitClass = dir === 'prev' ? 'exit-right' : 'exit-left';
+  SLIDES[cur].classList.remove('active');
+  SLIDES[cur].classList.add(exitClass);
+  const prev_slide = cur;
+  setTimeout(() => SLIDES[prev_slide].classList.remove(exitClass), 400);
+  cur = idx;
+  SLIDES[cur].style.transform = dir === 'prev' ? 'translateX(-40px)' : 'translateX(40px)';
+  SLIDES[cur].classList.add('active');
+  requestAnimationFrame(() => { SLIDES[cur].style.transform = ''; });
+  updateNav();
+  if (cur === 0) startHeroType();
+  if (cur === 2) resetDemo();
+}
+function next() { goTo(cur + 1, 'next'); }
+function prev() { goTo(cur - 1, 'prev'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+});
+
+/* ── TOUCH SWIPE ────────────────────────────────── */
+let tx0 = 0, ty0 = 0;
+document.addEventListener('touchstart', e => {
+  tx0 = e.touches[0].clientX;
+  ty0 = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx0;
+  const dy = e.changedTouches[0].clientY - ty0;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
+    if (dx < 0) next(); else prev();
+  }
+}, { passive: true });
+
+/* ── HERO TYPEWRITER ────────────────────────────── */
+const heroLines = [
+  { cls:'pp-q', text:'Q1. A convex lens of focal length 20 cm is used as a magnifying glass. If the object is placed at 15 cm, find the image distance.' },
+  { cls:'pp-a', text:'Ans: 1/v = 1/f + 1/u → 1/v = 1/20 − 1/15 = −1/60 → v = −60 cm (virtual, erect).' },
+  { cls:'pp-q', text:'Q2. State Snell\'s Law. A ray passes from air to glass (n=1.5) at 30°. Find refraction angle.' },
+  { cls:'pp-a', text:'Ans: n₁ sinθ₁ = n₂ sinθ₂ → sinθ₂ = sin30°/1.5 = 0.333 → θ₂ = 19.5°' },
+];
+let hIdx = 0, hChar = 0, hTimer = null;
+function startHeroType() {
+  const body = document.getElementById('ppBody');
+  body.innerHTML = '';
+  hIdx = 0; hChar = 0;
+  clearTimeout(hTimer);
+  typeHero();
+}
+function typeHero() {
+  if (hIdx >= heroLines.length) { hTimer = setTimeout(startHeroType, 3500); return; }
+  const line = heroLines[hIdx];
+  let el = document.getElementById('hl' + hIdx);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'hl' + hIdx;
+    el.className = line.cls;
+    el.style.marginBottom = '4px';
+    document.getElementById('ppBody').appendChild(el);
+  }
+  if (hChar < line.text.length) {
+    el.textContent = line.text.slice(0, ++hChar);
+    hTimer = setTimeout(typeHero, 16);
+  } else {
+    hIdx++; hChar = 0;
+    hTimer = setTimeout(typeHero, 380);
+  }
+}
+startHeroType();
+
+/* ── BOARD DATA ─────────────────────────────────── */
+let activeBoard = 'CBSE', isGenerating = false, genTimer = null;
+
+const BOARD_DATA = {
+  'CBSE':        { school: 'GREENWOOD INTERNATIONAL SCHOOL',    boardLine: 'Board: CBSE &nbsp;|&nbsp; Class: X &nbsp;|&nbsp; Subject: Science',            duration: 'Time: 2 hrs 30 min', marks: 'Max Marks: 30' },
+  'MP Board':    { school: 'SHRI VIVEKANAND VIDYA MANDIR',      boardLine: 'Board: MP Board (MPBSE) &nbsp;|&nbsp; Class: 10th &nbsp;|&nbsp; Vigyan',       duration: 'Samay: 3 Ghante',    marks: 'Poornanck: 75' },
+  'UP Board':    { school: 'SARASWATI SHISHU MANDIR, LUCKNOW',  boardLine: 'Board: UP Board (UPMSP) &nbsp;|&nbsp; Class: 10 &nbsp;|&nbsp; Science',        duration: 'Time: 3 hrs 15 min', marks: 'Max Marks: 70' },
+  'Maharashtra': { school: 'DNYANDEEP VIDYALAYA, PUNE',         boardLine: 'Board: Maharashtra State Board &nbsp;|&nbsp; Std: X &nbsp;|&nbsp; Science I',  duration: 'Time: 2 hrs',        marks: 'Total Marks: 40' },
+};
+
+const PAPERS = {
+  'CBSE': [
+    { type:'section', text:'SECTION A — Multiple Choice Questions (1 mark each)' },
+    { type:'q', num:'Q1.', text:'Which lens corrects long-sightedness (hypermetropia)?' },
+    { type:'opt', text:'(A) Concave lens &nbsp; (B) Convex lens &nbsp; (C) Plane mirror &nbsp; (D) Concave mirror' },
+    { type:'ans', text:'✓ Answer: B — Convex lens converges rays onto the retina.' },
+    { type:'q', num:'Q2.', text:'Ray passes air→glass (n=√2) at 45°. Angle of refraction is:' },
+    { type:'opt', text:'(A) 15°  (B) 30°  (C) 45°  (D) 60°' },
+    { type:'ans', text:'✓ Answer: B — Snell\'s Law: sinr = sin45°/√2 = 0.5 → r = 30°' },
+    { type:'section', text:'SECTION B — Short Answer Questions (2 marks each)' },
+    { type:'q', num:'Q3.', text:'State two laws of reflection. Give one application of a concave mirror.' },
+    { type:'ans', text:'✓ (1) Angle of incidence = Angle of reflection. (2) Incident ray, normal, reflected ray are coplanar. Application: Torches / vehicle headlamps (parallel beam).' },
+    { type:'section', text:'SECTION C — Case Study (4 marks)' },
+    { type:'q', num:'Q4.', text:'Ananya places a candle 10 cm before a concave mirror (f=15 cm). (a) Image distance? (b) Real or virtual? (c) Position for same-size image? (d) One device using this.' },
+    { type:'ans', text:'✓ (a) v = 30 cm behind mirror. (b) Virtual & erect. (c) At 2f (Centre of Curvature). (d) Shaving / makeup mirror.' },
+  ],
+  'MP Board': [
+    { type:'section', text:'खण्ड अ — वस्तुनिष्ठ प्रश्न (1 अंक प्रत्येक)' },
+    { type:'q', num:'प्र.1', text:'प्रकाश का अपवर्तन किसके कारण होता है?' },
+    { type:'opt', text:'(अ) माध्यम का घनत्व &nbsp;(ब) तरंगदैर्ध्य &nbsp;(स) आयाम &nbsp;(द) तीनों' },
+    { type:'ans', text:'✓ उत्तर: अ — माध्यम घनत्व बदलने से प्रकाश की चाल बदलती है।' },
+    { type:'q', num:'प्र.2', text:'अवतल दर्पण की फोकस दूरी 10 cm है। वक्रता त्रिज्या होगी:' },
+    { type:'opt', text:'(अ) 5 cm &nbsp;(ब) 10 cm &nbsp;(स) 20 cm &nbsp;(द) 40 cm' },
+    { type:'ans', text:'✓ उत्तर: स — R = 2f = 20 cm' },
+    { type:'section', text:'खण्ड ब — लघु उत्तरीय (2 अंक)' },
+    { type:'q', num:'प्र.3', text:'परावर्तन के दो नियम लिखिए।' },
+    { type:'ans', text:'✓ (1) आपतन कोण = परावर्तन कोण। (2) आपतित किरण, अभिलम्ब, परावर्तित किरण एक ही तल में।' },
+    { type:'section', text:'खण्ड स — दीर्घ उत्तरीय (5 अंक)' },
+    { type:'q', num:'प्र.4', text:'अवतल और उत्तल दर्पण में अंतर लिखिए। प्रत्येक के दो उपयोग तथा किरण आरेख बनाइए।' },
+    { type:'ans', text:'✓ अवतल: वास्तविक, उल्टा प्रतिबिम्ब। उपयोग: हेडलाइट, दाढ़ी दर्पण। उत्तल: आभासी, सीधा। उपयोग: पीछे देखने का दर्पण, सुरक्षा दर्पण।' },
+  ],
+  'UP Board': [
+    { type:'section', text:'खण्ड-क — बहुविकल्पीय प्रश्न (1 अंक) — 20 अंक' },
+    { type:'q', num:'1.', text:'स्नेल का नियम किससे सम्बन्धित है?' },
+    { type:'opt', text:'(a) परावर्तन &nbsp;(b) अपवर्तन &nbsp;(c) विवर्तन &nbsp;(d) व्यतिकरण' },
+    { type:'ans', text:'✓ उत्तर: (b) — Snell\'s Law: n₁ sinθ₁ = n₂ sinθ₂' },
+    { type:'q', num:'2.', text:'समतल दर्पण में प्रतिबिम्ब होता है:' },
+    { type:'opt', text:'(a) वास्तविक, सीधा &nbsp;(b) आभासी, सीधा &nbsp;(c) वास्तविक, उल्टा &nbsp;(d) आभासी, उल्टा' },
+    { type:'ans', text:'✓ उत्तर: (b) — समतल दर्पण में आभासी और सीधा प्रतिबिम्ब बनता है।' },
+    { type:'section', text:'खण्ड-ख — अति लघु उत्तरीय (1 अंक)' },
+    { type:'q', num:'3.', text:'क्रांतिक कोण की परिभाषा लिखिए।' },
+    { type:'ans', text:'✓ वह आपतन कोण जिस पर अपवर्तन कोण 90° हो, क्रांतिक कोण कहलाता है।' },
+    { type:'section', text:'खण्ड-ग — लघु उत्तरीय (2 अंक)' },
+    { type:'q', num:'4.', text:'पूर्ण आन्तरिक परावर्तन की दो शर्तें और दो उदाहरण दीजिए।' },
+    { type:'ans', text:'✓ शर्तें: सघन→विरल माध्यम, आपतन कोण ≥ क्रांतिक कोण। उदाहरण: ऑप्टिकल फाइबर, हीरे की चमक।' },
+  ],
+  'Maharashtra': [
+    { type:'section', text:'Q.1 — Choose the correct alternative (1 mark each)' },
+    { type:'q', num:'Q.1.A', text:'Which phenomenon causes a rainbow to form?' },
+    { type:'opt', text:'(A) Reflection &nbsp;(B) Refraction &nbsp;(C) Dispersion + TIR &nbsp;(D) Diffraction' },
+    { type:'ans', text:'✓ Answer: (C) — Dispersion and total internal reflection inside water droplets.' },
+    { type:'q', num:'Q.1.B', text:'Power of a convex lens with focal length 20 cm is:' },
+    { type:'opt', text:'(A) 20 D &nbsp;(B) 0.05 D &nbsp;(C) 5 D &nbsp;(D) −5 D' },
+    { type:'ans', text:'✓ Answer: (C) — P = 100/f(cm) = 100/20 = 5 D' },
+    { type:'section', text:'Q.2 — Activity Based Question (2 marks)' },
+    { type:'q', num:'Q.2.A', text:'Priya places a coin at the bottom of an empty bucket, then steps back until she can barely see it. When water is added, she can see the coin again. Draw a labelled diagram and explain.' },
+    { type:'ans', text:'✓ Refraction at water-air interface raises the apparent position of the coin. Light bends away from normal going from denser water to rarer air, making the coin visible at a higher position.' },
+    { type:'section', text:'Q.3 — Short Answer (3 marks)' },
+    { type:'q', num:'Q.3.A', text:'Explain working of an optical fibre with a neat diagram. State one application.' },
+    { type:'ans', text:'✓ Optical fibre uses Total Internal Reflection. Light undergoes repeated TIR along the fibre with negligible loss. Application: High-speed internet / endoscopy in medicine.' },
+  ],
+};
+
+function setBoard(b) {
+  if (isGenerating) return;
+  activeBoard = b;
+  document.querySelectorAll('.bpill').forEach(el => el.classList.toggle('active', el.textContent.trim() === b));
+  resetDemo();
+}
+
+function resetDemo() {
+  clearTimeout(genTimer);
+  isGenerating = false;
+  const d = BOARD_DATA[activeBoard] || BOARD_DATA['CBSE'];
+  document.getElementById('psSchool').textContent = d.school;
+  document.getElementById('psBoardLine').innerHTML = d.boardLine;
+  document.getElementById('psDuration').textContent = d.duration;
+  document.getElementById('psMarks').textContent = d.marks;
+  document.getElementById('psBody').innerHTML = '<div class="ps-ph">Tap "⚡ Generate Paper" to see AI build a real exam paper</div>';
+  document.getElementById('genStatus').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressPct').textContent = '0%';
+  const btn = document.getElementById('genBtn');
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate Paper';
+  btn.className = 'gen-btn';
+}
+
+function generatePaper() {
+  if (isGenerating) return;
+  isGenerating = true;
+  const btn = document.getElementById('genBtn');
+  const statusEl = document.getElementById('genStatus');
+  const statusText = document.getElementById('statusText');
+  const progressFill = document.getElementById('progressFill');
+  const progressPct = document.getElementById('progressPct');
+  const body = document.getElementById('psBody');
+
+  btn.disabled = true;
+  btn.textContent = '⟳ Generating…';
+  body.innerHTML = '';
+  statusEl.style.display = 'flex';
+
+  const steps = [
+    { msg: 'Applying ' + activeBoard + ' blueprint…', pct: 15 },
+    { msg: 'Generating Section A questions…',          pct: 35 },
+    { msg: 'Writing Section B & C…',                   pct: 60 },
+    { msg: 'Compiling answer key…',                    pct: 80 },
+    { msg: 'Formatting paper…',                        pct: 95 },
+  ];
+  let si = 0;
+  statusText.textContent = steps[0].msg;
+  progressFill.style.width = '15%';
+  progressPct.textContent = '15%';
+
+  const tick = setInterval(() => {
+    si++;
+    if (si < steps.length) {
+      statusText.textContent = steps[si].msg;
+      progressFill.style.width = steps[si].pct + '%';
+      progressPct.textContent = steps[si].pct + '%';
+    }
+  }, 480);
+
+  genTimer = setTimeout(() => {
+    clearInterval(tick);
+    progressFill.style.width = '100%';
+    progressPct.textContent = '100%';
+    statusText.textContent = 'Rendering paper…';
+
+    const items = PAPERS[activeBoard] || PAPERS['CBSE'];
+    let idx = 0;
+
+    function renderNext() {
+      if (idx >= items.length) {
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+          btn.disabled = false;
+          btn.textContent = '✓ Done — Tap to Regenerate';
+          btn.className = 'gen-btn done';
+          isGenerating = false;
+        }, 300);
+        return;
+      }
+      const item = items[idx];
+      const el = document.createElement('div');
+
+      if      (item.type === 'section') { el.className = 'ps-sec'; el.textContent = item.text; }
+      else if (item.type === 'q')       { el.className = 'ps-q';  el.innerHTML = '<span class="ps-qn">' + item.num + '</span> ' + item.text; }
+      else if (item.type === 'opt')     { el.className = 'ps-opt'; el.innerHTML = item.text; }
+      else if (item.type === 'ans')     { el.className = 'ps-ans'; el.textContent = item.text; }
+
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(4px)';
+      body.appendChild(el);
+      body.scrollTop = body.scrollHeight;
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }));
+
+      idx++;
+      setTimeout(renderNext, item.type === 'section' ? 300 : item.type === 'ans' ? 260 : 180);
+    }
+    renderNext();
+  }, 2600);
+}
+
+document.getElementById('genBtn').addEventListener('click', function () {
+  if (this.classList.contains('done')) resetDemo();
+});
+</script>
+</body>
+</html>

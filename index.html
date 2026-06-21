@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ShikshakAI — Presentations</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1B1464;--saf:#FF9933;--saf2:#FFB347;
+  --jade:#2E7D6B;--jade2:#3DA88F;
+  --sans:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{min-height:100%;font-family:var(--sans);background:var(--ink);color:#fff}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 20px;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 40%,rgba(255,153,51,.1) 0%,transparent 68%);pointer-events:none}
+
+/* HEADER */
+.logo{font-size:clamp(32px,7vw,56px);font-weight:900;letter-spacing:-1.5px;background:linear-gradient(130deg,#fff 0%,var(--saf) 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;text-align:center}
+.tagline{font-size:clamp(12px,2.5vw,15px);color:rgba(255,255,255,.48);text-align:center;margin-bottom:48px;letter-spacing:.02em}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:1fr;gap:16px;width:100%;max-width:700px}
+@media(min-width:560px){.cards{grid-template-columns:1fr 1fr}}
+
+.card{
+  display:flex;flex-direction:column;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:28px 26px;
+  text-decoration:none;color:#fff;
+  transition:transform .25s,border-color .25s,background .25s;
+  position:relative;overflow:hidden;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transition:opacity .25s;opacity:.6}
+.card-pitch::before{background:linear-gradient(90deg,var(--saf),transparent)}
+.card-exam::before{background:linear-gradient(90deg,var(--jade2),transparent)}
+.card:hover,.card:focus{transform:translateY(-4px);background:rgba(255,255,255,.07);outline:none}
+.card-pitch:hover{border-color:rgba(255,153,51,.45)}
+.card-exam:hover{border-color:rgba(61,168,143,.45)}
+.card:active{transform:scale(.98)}
+
+.card-icon{font-size:36px;margin-bottom:14px}
+.card-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.card-pitch .card-label{color:var(--saf)}
+.card-exam .card-label{color:var(--jade2)}
+.card-title{font-size:clamp(17px,3vw,22px);font-weight:800;line-height:1.2;margin-bottom:8px}
+.card-desc{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.6;flex:1}
+.card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}
+.card-slides{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35)}
+.card-arrow{font-size:18px;transition:transform .2s}
+.card:hover .card-arrow{transform:translateX(4px)}
+.card-pitch .card-arrow{color:var(--saf)}
+.card-exam .card-arrow{color:var(--jade2)}
+
+/* BADGES */
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid}
+.bs{background:rgba(255,153,51,.12);border-color:rgba(255,153,51,.3);color:var(--saf2)}
+.bj{background:rgba(46,125,107,.12);border-color:rgba(46,125,107,.35);color:var(--jade2)}
+.bw{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.65)}
+
+/* FOOTER */
+.footer{margin-top:40px;text-align:center;font-size:11px;color:rgba(255,255,255,.2);line-height:1.7}
+.footer a{color:rgba(255,153,51,.5);text-decoration:none}
+.footer a:hover{color:var(--saf)}
+
+/* SEPARATOR */
+.sep{display:flex;align-items:center;gap:12px;width:100%;max-width:700px;margin:6px 0}
+.sep-line{flex:1;height:1px;background:rgba(255,255,255,.06)}
+.sep-text{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+
+/* PULSE BADGE */
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--jade2);margin-right:5px;animation:pulse 2s infinite;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+</style>
+</head>
+<body>
+
+<div class="logo">ShikshakAI</div>
+<div class="tagline">The Operating System for Indian Schools — Presentation Suite</div>
+
+<div class="cards">
+
+  <!-- PITCH DECK -->
+  <a class="card card-pitch" href="ShikshakAI_Pitch.html">
+    <div class="card-icon">🎯</div>
+    <div class="card-label">Deck 1 — Sales Pitch</div>
+    <div class="card-title">ShikshakAI<br>Pitch Deck</div>
+    <div class="card-desc">The crisis in Indian school administration, the solution, live timetable conflict demo, impact numbers, and how it works.</div>
+    <div class="badge-row">
+      <span class="badge bs">⚡ Live timetable demo</span>
+      <span class="badge bw">6 slides</span>
+      <span class="badge bw">Mobile ready</span>
+    </div>
+    <div class="card-meta">
+      <span class="card-slides"><span class="live-dot"></span>Pitch → Problem → Solution → CTA</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+  <!-- EXAM DECK -->
+  <a class="card card-exam" href="ShikshakAI_ExamGenerator_Deck.html">
+    <div class="card-icon">📝</div>
+    <div class="card-label">Deck 2 — Product Demo</div>
+    <div class="card-title">Exam Paper<br>Generator</div>
+    <div class="card-desc">How the AI builds board-compliant exam papers in 30 seconds. Live paper generation demo across CBSE, MP Board, UP Board &amp; Maharashtra.</div>
+    <div class="badge-row">
+      <span class="badge bj">⚡ Live paper generation</span>
+      <span class="badge bw">7 slides</span>
+      <span class="badge bw">Mobile ready</span>
+    </div>
+    <div class="card-meta">
+      <span class="card-slides"><span class="live-dot"></span>How it works → Demo → Boards → CTA</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="sep" style="margin-top:36px">
+  <div class="sep-line"></div>
+  <div class="sep-text">Recommended order</div>
+  <div class="sep-line"></div>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.38);max-width:700px;text-align:center;flex-wrap:wrap;justify-content:center;margin-top:6px">
+  <span>🎯 Start with Pitch Deck</span>
+  <span style="color:rgba(255,153,51,.4);font-size:16px">→</span>
+  <span>📝 Then show Exam Generator</span>
+  <span style="color:rgba(255,153,51,.4);font-size:16px">→</span>
+  <span>✅ Close the demo</span>
+</div>
+
+<div class="footer">
+  Built with ShikshakAI · <a href="mailto:hello@shikshak.ai">hello@shikshak.ai</a><br>
+  Use arrow keys or swipe to navigate inside each deck
+</div>
+
+</body>
+</html>

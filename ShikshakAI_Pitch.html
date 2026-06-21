@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ShikshakAI — Pitch Deck</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1B1464;--saf:#FF9933;--saf2:#FFB347;
+  --jade:#2E7D6B;--jade2:#3DA88F;--red:#D93025;
+  --muted:rgba(255,255,255,.54);
+  --sans:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{width:100%;height:100%;font-family:var(--sans);background:var(--ink);overflow:hidden}
+
+/* ── DECK ───────────────────────────────────────── */
+.deck{width:100%;height:100%;position:relative;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-start;align-items:center;
+  padding:52px 20px 80px;
+  opacity:0;pointer-events:none;
+  transition:opacity .38s ease,transform .38s ease;
+  transform:translateX(40px);
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit-l{opacity:0;transform:translateX(-40px)}
+.slide.exit-r{opacity:0;transform:translateX(40px)}
+@media(min-height:580px){.slide{justify-content:center}}
+
+/* ── NAV ────────────────────────────────────────── */
+.nav{
+  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;z-index:300;
+  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14);
+  border-radius:40px;padding:8px 14px;backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;transition:all .3s;flex-shrink:0}
+.dot.on{background:var(--saf);width:18px;border-radius:3px}
+.nbtn{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:20px;padding:2px 5px;line-height:1;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center}
+.nbtn:active{color:#fff}
+.ctr{font-size:10px;color:rgba(255,255,255,.32);font-family:var(--mono);min-width:26px;text-align:center}
+.swipe-hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.06em;pointer-events:none;display:none;white-space:nowrap}
+@media(max-width:600px){.swipe-hint{display:block}}
+
+/* ── COMMON ─────────────────────────────────────── */
+.inner{width:100%;max-width:860px}
+.eye{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--saf);margin-bottom:8px}
+h2{font-size:clamp(20px,4.5vw,42px);font-weight:800;line-height:1.1;color:#fff}
+.accent{color:var(--saf)}.jade-t{color:var(--jade2)}
+
+/* slide backgrounds */
+.bg1{background:var(--ink)}
+.bg1::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,153,51,.12) 0%,transparent 70%);pointer-events:none}
+.bg2{background:linear-gradient(145deg,#120F4A,var(--ink))}
+.bg3{background:#0F0D3A}
+.bg4{background:linear-gradient(135deg,#0A0830,var(--ink) 50%,#1A3A2A)}
+.bg5{background:var(--ink)}
+.bg6{background:radial-gradient(ellipse 80% 60% at 50% 60%,rgba(255,153,51,.15) 0%,transparent 65%),var(--ink)}
+
+/* ── S1 HERO ────────────────────────────────────── */
+#s1{text-align:center}
+.hero-logo{font-size:clamp(44px,10vw,88px);font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#fff 0%,var(--saf) 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.hero-tag{font-size:clamp(12px,2.5vw,17px);color:var(--muted);letter-spacing:.04em;margin-bottom:24px}
+.grid-anim{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;width:min(420px,90vw);margin:0 auto 24px}
+.gc{height:24px;border-radius:3px;font-size:8px;font-weight:600;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--mono);transition:background .4s,transform .3s;opacity:0}
+.gc.show{opacity:1}
+.gc.conflict{background:rgba(217,48,37,.7);animation:shake .3s}
+.gc.solved{background:rgba(46,125,107,.8);transform:scale(1.04)}
+.gc.neutral{background:rgba(255,255,255,.08)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+.start-btn{background:var(--saf);color:var(--ink);border:none;padding:13px 32px;border-radius:40px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);width:100%;max-width:260px}
+.start-btn:active{opacity:.85;transform:scale(.97)}
+@media(hover:hover){.start-btn:hover{background:var(--saf2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,153,51,.4)}}
+
+/* ── S2 CRISIS ──────────────────────────────────── */
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:20px}
+@media(max-width:420px){.pain-grid{grid-template-columns:1fr}}
+.pain-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+.pain-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
+@media(hover:hover){.pain-card:hover{transform:translateY(-2px);border-color:rgba(255,153,51,.4)}}
+.pain-num{font-family:var(--mono);font-size:clamp(28px,5vw,42px);font-weight:700;color:var(--red);opacity:.85;line-height:1;margin-bottom:3px}
+.pain-unit{font-size:10px;color:rgba(255,255,255,.4);font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.pain-label{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:3px}
+.pain-desc{font-size:11px;color:rgba(255,255,255,.48);line-height:1.5}
+
+/* ── S3 TIMETABLE DEMO ──────────────────────────── */
+.demo-wrap{width:100%;max-width:860px}
+.demo-header{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+@media(min-width:580px){.demo-header{flex-direction:row;align-items:center;justify-content:space-between}}
+.demo-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.conflict-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,48,37,.15);border:1px solid rgba(217,48,37,.4);border-radius:20px;font-size:11px;font-weight:600;color:#FF8A85;transition:all .5s;white-space:nowrap}
+.conflict-badge.zero{background:rgba(46,125,107,.15);border-color:var(--jade2);color:var(--jade2)}
+.timer-badge{font-family:var(--mono);font-size:12px;color:var(--saf);background:rgba(255,153,51,.1);border:1px solid rgba(255,153,51,.25);padding:5px 10px;border-radius:20px;white-space:nowrap}
+.demo-btn{background:rgba(255,153,51,.15);border:1px solid rgba(255,153,51,.4);color:var(--saf);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .2s;white-space:nowrap;min-height:38px}
+.demo-btn:active{opacity:.8}
+@media(hover:hover){.demo-btn:hover{background:var(--saf);color:var(--ink)}}
+.demo-btn.solving{background:rgba(46,125,107,.2);border-color:var(--jade2);color:var(--jade2);cursor:not-allowed}
+/* mobile: scrollable timetable */
+.tt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
+.tt-grid{display:grid;gap:2px;min-width:480px}
+/* mobile: fewer columns shown, period label narrower */
+.tt-grid{grid-template-columns:56px repeat(5,1fr)}
+@media(min-width:600px){.tt-grid{grid-template-columns:70px repeat(5,1fr);gap:3px}}
+.tt-head{background:rgba(255,255,255,.06);border-radius:5px;padding:5px 3px;text-align:center;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.04em}
+.tt-label{display:flex;align-items:center;font-size:9.5px;font-family:var(--mono);color:rgba(255,255,255,.4);padding-left:3px;line-height:1.3}
+.tt-cell{border-radius:5px;padding:4px 3px;text-align:center;font-size:9px;font-weight:600;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .5s;line-height:1.25}
+@media(min-width:600px){.tt-cell{font-size:10px;min-height:44px}}
+.tt-cell .teacher{font-size:8px;font-weight:400;opacity:.65;margin-top:1px}
+.c-conflict{background:rgba(217,48,37,.25);border:1px solid rgba(217,48,37,.6);color:#FF8A85}
+.c-solved{background:rgba(46,125,107,.25);border:1px solid rgba(46,125,107,.5);color:#7EDECE}
+.c-neutral{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.c-break{background:rgba(255,153,51,.08);border:1px dashed rgba(255,153,51,.3);color:rgba(255,153,51,.7);font-size:9px}
+.tt-note{margin-top:10px;font-size:10px;color:rgba(255,255,255,.28);text-align:center}
+
+/* ── S4 IMPACT ──────────────────────────────────── */
+.impact-row{display:grid;grid-template-columns:1fr;gap:12px;width:100%;margin-top:20px}
+@media(min-width:560px){.impact-row{grid-template-columns:repeat(3,1fr)}}
+.imp-card{border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;border:1px solid}
+.imp-card.before{background:rgba(217,48,37,.08);border-color:rgba(217,48,37,.2)}
+.imp-card.after{background:rgba(46,125,107,.1);border-color:rgba(46,125,107,.35)}
+.imp-card.saving{background:rgba(255,153,51,.08);border-color:rgba(255,153,51,.25)}
+.imp-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.before .imp-label{color:var(--red)}.after .imp-label{color:var(--jade2)}.saving .imp-label{color:var(--saf)}
+.comp-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.comp-row:last-of-type{border-bottom:none}
+.comp-task{font-size:11px;color:rgba(255,255,255,.58)}
+.comp-val{font-family:var(--mono);font-size:12px;font-weight:600}
+.before .comp-val{color:#FF8A85}.after .comp-val{color:var(--jade2)}.saving .comp-val{color:var(--saf)}
+.big-num{font-size:clamp(24px,4vw,38px);font-weight:900;margin-top:auto;padding-top:12px}
+.before .big-num{color:var(--red)}.after .big-num{color:var(--jade2)}.saving .big-num{color:var(--saf)}
+.big-cap{font-size:10px;color:rgba(255,255,255,.42);margin-top:2px}
+/* on mobile, stack impact cards horizontally in 1-col with condensed rows */
+@media(max-width:559px){
+  .comp-task{font-size:10.5px}.comp-val{font-size:11px}.big-num{padding-top:8px}
+}
+
+/* ── S5 HOW IT WORKS ────────────────────────────── */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:860px;width:100%;margin-top:20px}
+@media(min-width:600px){.how-grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+.how-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 16px;transition:all .3s}
+@media(hover:hover){.how-card:hover{border-color:rgba(255,153,51,.4);transform:translateY(-3px);background:rgba(255,255,255,.06)}}
+.how-step{font-family:var(--mono);font-size:10px;color:var(--saf);font-weight:600;letter-spacing:.08em;margin-bottom:10px}
+.how-icon{font-size:26px;margin-bottom:8px}
+.how-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px}
+.how-body{font-size:11px;color:rgba(255,255,255,.5);line-height:1.55}
+.how-pill{display:inline-block;margin-top:10px;padding:2px 9px;background:rgba(46,125,107,.15);border:1px solid rgba(46,125,107,.35);border-radius:20px;font-size:9.5px;font-weight:600;color:var(--jade2)}
+
+/* ── S6 CTA ─────────────────────────────────────── */
+#s6{text-align:center}
+.cta-number{font-family:var(--mono);font-size:clamp(52px,12vw,96px);font-weight:900;background:linear-gradient(135deg,var(--saf),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:16px 0 4px}
+.cta-denom{font-size:clamp(12px,2.5vw,17px);color:var(--muted);margin-bottom:24px;line-height:1.5;max-width:420px}
+.cta-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:400px;margin:0 auto 24px}
+@media(min-width:480px){.cta-row{grid-template-columns:repeat(4,1fr);max-width:560px}}
+.cta-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 8px;text-align:center}
+.cta-stat-val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--saf)}
+.cta-stat-lbl{font-size:10px;color:rgba(255,255,255,.42);margin-top:2px}
+.cta-primary{background:linear-gradient(135deg,var(--saf),#FF7700);color:var(--ink);border:none;padding:14px 36px;border-radius:40px;font-size:15px;font-weight:800;cursor:pointer;transition:all .25s;font-family:var(--sans);box-shadow:0 4px 28px rgba(255,153,51,.35);width:100%;max-width:320px}
+.cta-primary:active{transform:scale(.97)}
+@media(hover:hover){.cta-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,153,51,.5)}}
+.cta-sub{font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S1: HERO -->
+<div class="slide active bg1" id="s1">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%">
+    <div class="eye">Introducing</div>
+    <div class="hero-logo">ShikshakAI</div>
+    <div class="hero-tag">The Operating System for Indian Schools</div>
+    <div class="grid-anim" id="heroGrid"></div>
+    <button class="start-btn" onclick="goTo(1,'next')">See the Problem →</button>
+  </div>
+</div>
+
+<!-- S2: CRISIS -->
+<div class="slide bg2" id="s2">
+  <div class="inner">
+    <div class="eye">The Reality in Every Indian School</div>
+    <h2>Your teachers are <span class="accent">drowning in paperwork</span><br>instead of teaching</h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-num">55%</div>
+        <div class="pain-unit">of Indian teachers say</div>
+        <div class="pain-label">Admin overload is their #1 stress</div>
+        <div class="pain-desc">Manual registers, substitution mapping, and test drafting consume hours that belong in the classroom.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">15</div>
+        <div class="pain-unit">days every term</div>
+        <div class="pain-label">Lost to manual timetable creation</div>
+        <div class="pain-desc">One staff change throws the entire schedule into chaos. Coordinators restart from scratch every time.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">6hrs</div>
+        <div class="pain-unit">per exam paper</div>
+        <div class="pain-label">Drafting a single board-aligned test</div>
+        <div class="pain-desc">CBSE/ICSE blueprint, MCQs, case questions, marking schemes — all done by hand.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">₹1.5L</div>
+        <div class="pain-unit">wasted annually</div>
+        <div class="pain-label">Printing errors, scheduling staff &amp; paper waste</div>
+        <div class="pain-desc">Every timetable clash = lost teaching hours. Every reprint = money down the drain.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: LIVE TIMETABLE DEMO -->
+<div class="slide bg3" id="s3">
+  <div class="demo-wrap">
+    <div class="demo-header">
+      <div>
+        <div class="eye">Live Demo</div>
+        <h2 style="font-size:clamp(18px,4vw,34px)">Watch conflicts <span class="accent">vanish</span> in real time</h2>
+      </div>
+      <div class="demo-controls">
+        <span class="conflict-badge" id="conflictBadge">⚠ 7 conflicts</span>
+        <span class="timer-badge" id="timerBadge">0.0s</span>
+        <button class="demo-btn" id="solveBtn" onclick="runSolver()">⚡ Solve</button>
+      </div>
+    </div>
+    <div class="tt-scroll">
+      <div class="tt-grid" id="ttGrid"></div>
+    </div>
+    <div class="tt-note">Class 9A — Greenwood International School · Mon–Fri · 7 periods</div>
+  </div>
+</div>
+
+<!-- S4: IMPACT -->
+<div class="slide bg4" id="s4">
+  <div class="inner" style="text-align:center">
+    <div class="eye">Before vs After</div>
+    <h2>The numbers speak for <span class="accent">themselves</span></h2>
+    <div class="impact-row">
+      <div class="imp-card before">
+        <div class="imp-label">🔴 Before ShikshakAI</div>
+        <div class="comp-row"><span class="comp-task">Timetable design</span><span class="comp-val">10–15 days</span></div>
+        <div class="comp-row"><span class="comp-task">Exam paper drafting</span><span class="comp-val">4–6 hours</span></div>
+        <div class="comp-row"><span class="comp-task">Substitution duty</span><span class="comp-val">Hours of chaos</span></div>
+        <div class="comp-row"><span class="comp-task">Marking scheme</span><span class="comp-val">2 hrs/paper</span></div>
+        <div class="big-num">1,800+</div>
+        <div class="big-cap">admin hours wasted/year (45 teachers)</div>
+      </div>
+      <div class="imp-card after">
+        <div class="imp-label">🟢 After ShikshakAI</div>
+        <div class="comp-row"><span class="comp-task">Timetable design</span><span class="comp-val">3 seconds</span></div>
+        <div class="comp-row"><span class="comp-task">Exam paper drafting</span><span class="comp-val">30 seconds</span></div>
+        <div class="comp-row"><span class="comp-task">Substitution duty</span><span class="comp-val">Instant auto</span></div>
+        <div class="comp-row"><span class="comp-task">Marking scheme</span><span class="comp-val">Auto-bundled</span></div>
+        <div class="big-num">400×</div>
+        <div class="big-cap">faster than manual scheduling</div>
+      </div>
+      <div class="imp-card saving">
+        <div class="imp-label">💰 What You Save</div>
+        <div class="comp-row"><span class="comp-task">Printing waste</span><span class="comp-val">−90%</span></div>
+        <div class="comp-row"><span class="comp-task">Admin overhead</span><span class="comp-val">−₹2L/yr</span></div>
+        <div class="comp-row"><span class="comp-task">Teacher stress</span><span class="comp-val">−55%</span></div>
+        <div class="comp-row"><span class="comp-task">Weekly planning</span><span class="comp-val">+12 hrs back</span></div>
+        <div class="big-num">₹2L+</div>
+        <div class="big-cap">saved in operational costs/year</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: HOW IT WORKS -->
+<div class="slide bg5" id="s5">
+  <div class="inner" style="text-align:center">
+    <div class="eye">How It Works</div>
+    <h2>Three steps from <span class="accent">chaos</span> to <span class="jade-t">clarity</span></h2>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-step">STEP 01</div><div class="how-icon">📋</div><div class="how-title">Onboard your school</div><div class="how-body">Upload teacher roster, subjects, class sections, and room details once. ShikshakAI maps your structure — CBSE, ICSE, or State Board.</div><div class="how-pill">5-minute setup</div></div>
+      <div class="how-card"><div class="how-step">STEP 02</div><div class="how-icon">⚡</div><div class="how-title">AI solves in 3 seconds</div><div class="how-body">10,000+ checks: no teacher clashes, correct period counts, lab rotations, PE scheduling, and board compliance — automatically.</div><div class="how-pill">Zero conflicts guaranteed</div></div>
+      <div class="how-card"><div class="how-step">STEP 03</div><div class="how-icon">🖨️</div><div class="how-title">Export, share, done</div><div class="how-body">Print-ready PDF timetables per class and teacher. Board-compliant exam papers with answer keys. Substitutions from your phone.</div><div class="how-pill">Instant PDF export</div></div>
+      <div class="how-card"><div class="how-step">FEATURE</div><div class="how-icon">📝</div><div class="how-title">Board-aligned exam builder</div><div class="how-body">CBSE Section A–D auto-fill. MCQ, short answer, case-based &amp; JEE/NEET questions in 30 seconds with full marking scheme.</div><div class="how-pill">CBSE · ICSE · State</div></div>
+      <div class="how-card"><div class="how-step">FEATURE</div><div class="how-icon">🔄</div><div class="how-title">Live substitution engine</div><div class="how-body">Teacher absent? ShikshakAI instantly reallocates free staff by subject match, current load, and proximity. No morning chaos.</div><div class="how-pill">Instant reallocation</div></div>
+      <div class="how-card"><div class="how-step">FEATURE</div><div class="how-icon">☁️</div><div class="how-title">Secure cloud storage</div><div class="how-body">All schedules, rosters &amp; past papers on Supabase secure cloud. Zero data loss, accessible from any device, 100% paperless preview.</div><div class="how-pill">Supabase powered</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: CTA -->
+<div class="slide bg6" id="s6">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;max-width:600px">
+    <div class="eye">For a school of 45 teachers</div>
+    <div class="cta-number">1,800</div>
+    <div class="cta-denom">hours of administrative work returned to teaching — every year</div>
+    <div class="cta-row">
+      <div class="cta-stat"><div class="cta-stat-val">400×</div><div class="cta-stat-lbl">Faster timetabling</div></div>
+      <div class="cta-stat"><div class="cta-stat-val">₹2L+</div><div class="cta-stat-lbl">Annual savings</div></div>
+      <div class="cta-stat"><div class="cta-stat-val">0</div><div class="cta-stat-lbl">Teacher clashes</div></div>
+      <div class="cta-stat"><div class="cta-stat-val">3s</div><div class="cta-stat-lbl">To generate</div></div>
+    </div>
+    <button class="cta-primary" onclick="alert('Demo request noted! Our team will contact you within 24 hours.')">Request a Free School Demo</button>
+    <div class="cta-sub">No setup cost · CBSE / ICSE / State Board ready · Onboard in 5 minutes</div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<div class="nav">
+  <button class="nbtn" onclick="prev()">‹</button>
+  <div id="dots" style="display:flex;gap:5px"></div>
+  <span class="ctr" id="ctr">1/6</span>
+  <button class="nbtn" onclick="next()">›</button>
+</div>
+<div class="swipe-hint">← swipe to navigate →</div>
+
+<script>
+/* ── NAV ──────────────────────────────────────── */
+const SLIDES = document.querySelectorAll('.slide'), N = SLIDES.length;
+let cur = 0;
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < N; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => goTo(i, i > cur ? 'next' : 'prev');
+  dotsEl.appendChild(d);
+}
+function updateNav() {
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  document.getElementById('ctr').textContent = (cur + 1) + '/' + N;
+}
+function goTo(idx, dir) {
+  if (idx === cur || idx < 0 || idx >= N) return;
+  const exitCls = dir === 'prev' ? 'exit-r' : 'exit-l';
+  SLIDES[cur].classList.remove('active');
+  SLIDES[cur].classList.add(exitCls);
+  const prev_i = cur;
+  setTimeout(() => SLIDES[prev_i].classList.remove(exitCls), 400);
+  cur = idx;
+  SLIDES[cur].style.transform = dir === 'prev' ? 'translateX(-40px)' : 'translateX(40px)';
+  SLIDES[cur].classList.add('active');
+  requestAnimationFrame(() => { SLIDES[cur].style.transform = ''; });
+  updateNav();
+  if (cur === 0) initHeroGrid();
+  if (cur === 2) initTTGrid();
+}
+function next() { goTo(cur + 1, 'next'); }
+function prev() { goTo(cur - 1, 'prev'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+});
+
+/* ── TOUCH SWIPE ──────────────────────────────── */
+let tx0 = 0, ty0 = 0;
+document.addEventListener('touchstart', e => { tx0 = e.touches[0].clientX; ty0 = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx0;
+  const dy = e.changedTouches[0].clientY - ty0;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
+    if (dx < 0) next(); else prev();
+  }
+}, { passive: true });
+
+/* ── HERO GRID ────────────────────────────────── */
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Fri'];
+const SUBJ = ['Math','Sci','Eng','Hindi','SSt','PT','Art'];
+function initHeroGrid() {
+  const g = document.getElementById('heroGrid');
+  g.innerHTML = '';
+  const colors = ['#1B5E8A','#1B6B4A','#6B2D8A','#8A6B1B','#8A1B1B','#1B4A6B','#4A1B6B'];
+  DAYS.forEach(d => { const c = document.createElement('div'); c.className = 'gc neutral'; c.textContent = d; g.appendChild(c); });
+  for (let r = 0; r < 5; r++) SUBJ.forEach((s, ci) => {
+    const c = document.createElement('div'); c.className = 'gc';
+    c.innerHTML = '<span>' + s + '</span>'; c.style.background = colors[ci] + '99'; g.appendChild(c);
+  });
+  const cells = [...g.querySelectorAll('.gc')];
+  cells.forEach((c, i) => { c.classList.remove('show','conflict','solved'); setTimeout(() => c.classList.add('show'), i * 28); });
+  const cIdx = [8, 10, 15, 22, 30];
+  setTimeout(() => cIdx.forEach(i => cells[i + 7] && cells[i + 7].classList.add('conflict')), 1800);
+  setTimeout(() => cIdx.forEach(i => cells[i + 7] && (cells[i + 7].classList.remove('conflict'), cells[i + 7].classList.add('solved'))), 3200);
+  setTimeout(initHeroGrid, 5500);
+}
+initHeroGrid();
+
+/* ── TIMETABLE DEMO ───────────────────────────── */
+const TT_DATA = {
+  heads: ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  rows: [
+    { label:'P1\n8:00',  cells:[{t:'Math',tc:'Sharma',s:'c-conflict'},{t:'English',tc:'Smith',s:'c-neutral'},{t:'Science',tc:'Das',s:'c-neutral'},{t:'Math',tc:'Sharma',s:'c-conflict'},{t:'Hindi',tc:'Joshi',s:'c-neutral'}]},
+    { label:'P2\n8:45',  cells:[{t:'Science',tc:'Das',s:'c-neutral'},{t:'Math',tc:'Sharma',s:'c-neutral'},{t:'English',tc:'Smith',s:'c-neutral'},{t:'Science',tc:'Das',s:'c-neutral'},{t:'Math',tc:'Sharma',s:'c-neutral'}]},
+    { label:'P3\n9:30',  cells:[{t:'Hindi',tc:'Joshi',s:'c-neutral'},{t:'Science',tc:'Das',s:'c-conflict'},{t:'Math',tc:'Sharma',s:'c-neutral'},{t:'English',tc:'Smith',s:'c-neutral'},{t:'Science',tc:'Das',s:'c-neutral'}]},
+    { label:'LUNCH',     cells:[{t:'Lunch',tc:'',s:'c-break'},{t:'Lunch',tc:'',s:'c-break'},{t:'Lunch',tc:'',s:'c-break'},{t:'Lunch',tc:'',s:'c-break'},{t:'Lunch',tc:'',s:'c-break'}]},
+    { label:'P4\n11:30', cells:[{t:'SocSci',tc:'Iyer',s:'c-neutral'},{t:'Hindi',tc:'Joshi',s:'c-neutral'},{t:'SocSci',tc:'Iyer',s:'c-conflict'},{t:'Math',tc:'Sharma',s:'c-neutral'},{t:'English',tc:'Smith',s:'c-neutral'}]},
+    { label:'P5\n12:15', cells:[{t:'English',tc:'Smith',s:'c-neutral'},{t:'SocSci',tc:'Iyer',s:'c-conflict'},{t:'Hindi',tc:'Joshi',s:'c-neutral'},{t:'SocSci',tc:'Iyer',s:'c-conflict'},{t:'Math',tc:'Sharma',s:'c-conflict'}]},
+    { label:'P6\n1:00',  cells:[{t:'Art',tc:'Abhishek',s:'c-neutral'},{t:'PE',tc:'Patel',s:'c-neutral'},{t:'Art',tc:'Abhishek',s:'c-neutral'},{t:'Hindi',tc:'Joshi',s:'c-neutral'},{t:'PE',tc:'Patel',s:'c-neutral'}]},
+    { label:'P7\n1:45',  cells:[{t:'PE',tc:'Patel',s:'c-neutral'},{t:'Art',tc:'Abhishek',s:'c-neutral'},{t:'PE',tc:'Patel',s:'c-conflict'},{t:'PE',tc:'Patel',s:'c-neutral'},{t:'Art',tc:'Abhishek',s:'c-neutral'}]},
+  ]
+};
+
+let solverRunning = false;
+function initTTGrid() {
+  const g = document.getElementById('ttGrid');
+  g.innerHTML = '';
+  TT_DATA.heads.forEach(h => {
+    const el = document.createElement('div'); el.className = 'tt-head'; el.textContent = h; g.appendChild(el);
+  });
+  TT_DATA.rows.forEach(row => {
+    const lbl = document.createElement('div'); lbl.className = 'tt-label'; lbl.style.whiteSpace = 'pre'; lbl.textContent = row.label; g.appendChild(lbl);
+    row.cells.forEach(cell => {
+      const el = document.createElement('div'); el.className = 'tt-cell ' + cell.s;
+      el.innerHTML = '<span>' + cell.t + '</span>' + (cell.tc ? '<span class="teacher">' + cell.tc + '</span>' : '');
+      g.appendChild(el);
+    });
+  });
+  document.getElementById('conflictBadge').textContent = '⚠ 7 conflicts';
+  document.getElementById('conflictBadge').classList.remove('zero');
+  document.getElementById('timerBadge').textContent = '0.0s';
+  const btn = document.getElementById('solveBtn');
+  btn.textContent = '⚡ Solve'; btn.classList.remove('solving');
+  btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = '';
+  solverRunning = false;
+}
+
+function runSolver() {
+  if (solverRunning) return;
+  solverRunning = true;
+  const btn = document.getElementById('solveBtn');
+  btn.textContent = '⟳ Solving…'; btn.classList.add('solving');
+  const timerEl = document.getElementById('timerBadge');
+  let t = 0;
+  const tick = setInterval(() => { t += 0.1; timerEl.textContent = t.toFixed(1) + 's'; if (t >= 3.0) clearInterval(tick); }, 100);
+  const cells = [...document.querySelectorAll('#ttGrid .tt-cell')];
+  cells.forEach(c => { if (c.classList.contains('c-conflict')) c.style.transform = 'scale(1.05)'; });
+  setTimeout(() => cells.forEach(c => c.style.transform = ''), 350);
+  const conflictCells = cells.filter(c => c.classList.contains('c-conflict'));
+  conflictCells.forEach((c, i) => {
+    setTimeout(() => {
+      c.classList.remove('c-conflict'); c.classList.add('c-solved');
+      const rem = 7 - (i + 1);
+      const badge = document.getElementById('conflictBadge');
+      if (rem > 0) badge.textContent = '⚠ ' + rem + ' remaining';
+      else { badge.textContent = '✓ 0 conflicts'; badge.classList.add('zero'); }
+    }, 550 + i * 320);
+  });
+  setTimeout(() => {
+    btn.textContent = '✓ Solved in 3.0s'; btn.classList.remove('solving');
+    btn.style.background = 'rgba(46,125,107,.2)'; btn.style.color = '#7EDECE'; btn.style.borderColor = 'rgba(61,168,143,.5)';
+  }, 550 + conflictCells.length * 320 + 350);
+}
+</script>
+</body>
+</html>
